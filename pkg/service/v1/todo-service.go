@@ -135,3 +135,57 @@ func (s *toDoServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.
 }
 
 // Update todo task
+func (s *toDoServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (*v1.UpdateResponse, error) {
+	// check if the API version requested by client is supported by server
+	if err := s.checkAPI(req.Api); err != nil {
+		return nil, err
+	}
+
+	// get SQL connect from pool
+	c, err := s.connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer c.Close()
+
+	reminder, err := ptypes.Timestamp(req.ToDo.Reminder)
+	if err != nil {
+		return nil, status.Error(codes.InvaildArgument, "reminder field had invalid format->"+err.Error())
+	}
+
+	// update ToDo
+	res, err := c.ExecContext(ctx, "UPDATE ToDo SET `Title`=?, `Description`=?, `Reminder`=? WHERE `ID`=?", req.ToDo.Title, req.ToDo.Description, reminder, req.ToDo.id)
+	if err != nil {
+		return nil, status.Error(codes.Unknown, "failed to update ToDo->"+err.Error())
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return nil, status.Error(codes.Unknown, "failed to retrieve rows affected value->"+err.Error())
+	}
+	if rows == 0 {
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("ToDo with ID='%d' is not found", req.ToDo.Id))
+	}
+
+	return &v1.UpdateResponse{
+		Api: apiVersion,
+		Updated: rows,
+	}, nil
+}
+
+// Delete todo task
+func (s *todoServiceServer) Delete(ctx context.Conext, req *v1.DeleteRequest) (*v1.DeleteResponse, error) {
+	// check if the API version requested by client is supported by server
+	if err := s.checkAPI(req.Api); err != nil {
+		return nil, err
+	}
+
+	// get SQL connect from pool
+	c, err := s.connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+	c.Close()
+
+	// delete ToDo
+}
