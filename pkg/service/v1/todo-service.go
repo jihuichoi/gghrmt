@@ -11,10 +11,11 @@ import (
 	"google.golang.org/grpc/status"
 
 	// "../../pkg/api/v1"
+	"github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/api/v1"
 )
 
 const (
-	// apiVersion is verson of API is provided by server
+	// apiVersion is version of API is provided by server
 	apiVersion = "v1"
 )
 
@@ -185,7 +186,70 @@ func (s *todoServiceServer) Delete(ctx context.Conext, req *v1.DeleteRequest) (*
 	if err != nil {
 		return nil, err
 	}
-	c.Close()
+	defer c.Close()
 
 	// delete ToDo
+	res, err := c.ExecContext(ctx, "DELETE FROM ToDo WHERE `ID`=?", req.Id)
+	if err != nil {
+		return nil, status.Error(codes.Unknown, "failed to delete ToDo->"+err.Error())
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return nil, status.Error(codes.Unknown, "failed to retrieve rows affected vale->"+err.Error())
+	}
+
+	if rows == 0 {
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("Todo with ID='%d' is not found", req.Id))
+	}
+
+	return &v1.DeleteResponse{
+		Api: apiVersion,
+		Deleted: rows,
+	}, nil
+}
+
+// Read all todo tasks
+func (s *toDoServiceServer) ReadAll(ctx context.Context, req *v1.ReadAllRequest) (*v1.ReadAllResponse, error) {
+	// check if the API version requested by client is supported by server
+	if err := s.checkAPI(req.Api); err != nil {
+		return nil, err
+	}
+
+	// get SQL connection from pool
+	c, err := s.connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer c.Close()
+
+	// get ToDo list
+	rows, err := c.QueryContext(ctx, "SELECT `ID`, `Title`, `Description`, `Reminder` FROM ToDo")
+	if err != nil {
+		return nil, status.Error(codes.Unknown, "failed to select from ToDo->"+err.Error())
+	}
+	defer rows.Close()
+
+	var reminder time.Time
+	list := []*v1.ToDo{}
+	for rows.Next() {
+		td := new(v1.ToDo)
+		if err := rows.Scan(&td.Id, &td.Title, &td.Description, &reminder); err != nil {
+			return nil, status.Error(codes.Unknown, "failed to retrieve field values from ToDo row->"+err.Error())
+		}
+		td.Reminder, err = ptypes.TimestampProto(reminder)
+		if err != nil {
+			return nil, status.Error(codes.Unknown, "reminder field has invalid format->"+err.Error())
+		}
+		list = append(list, td)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, status.Error(codes.Unknown, "failed to retrieve data from ToDo->"+err.Error())
+	}
+
+	return &v1.ReadAllResponse{
+		Api: apiVersion,
+		ToDos: list,
+	}, nil
 }
