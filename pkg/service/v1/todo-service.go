@@ -10,8 +10,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	// "../../pkg/api/v1"
-	"github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/api/v1"
+	// "github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/api/v1"
+	"../../../pkg/api/v1"
 )
 
 const (
@@ -44,8 +44,9 @@ func (s *toDoServiceServer) checkAPI(api string) error {
 func (s *toDoServiceServer) connect(ctx context.Context) (*sql.Conn, error) {
 	c, err := s.db.Conn(ctx)
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to connect to database -> "+err.)
+		return nil, status.Error(codes.Unknown, "failed to connect to database -> "+err.Error())
 	}
+	return c, nil
 }
 
 // Create new todo task
@@ -71,7 +72,7 @@ func (s *toDoServiceServer) Create(ctx context.Context, req *v1.CreateRequest) (
 	res, err := c.ExecContext(ctx, "INSERT INTO ToDo(`Title`, `Description`, `Reminder`) VALUES (?, ?, ?)",
 		req.ToDo.Title, req.ToDo.Description, reminder)
 	if err != nil {
-		return nul, status.Error(codes.Unknown, "failed to insert into Todo->", err.Error())
+		return nil, status.Error(codes.Unknown, "failed to insert into Todo->"+ err.Error())
 	}
 
 	// get ID of created ToDo
@@ -151,11 +152,11 @@ func (s *toDoServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (
 
 	reminder, err := ptypes.Timestamp(req.ToDo.Reminder)
 	if err != nil {
-		return nil, status.Error(codes.InvaildArgument, "reminder field had invalid format->"+err.Error())
+		return nil, status.Error(codes.InvalidArgument, "reminder field had invalid format->"+err.Error())
 	}
 
 	// update ToDo
-	res, err := c.ExecContext(ctx, "UPDATE ToDo SET `Title`=?, `Description`=?, `Reminder`=? WHERE `ID`=?", req.ToDo.Title, req.ToDo.Description, reminder, req.ToDo.id)
+	res, err := c.ExecContext(ctx, "UPDATE ToDo SET `Title`=?, `Description`=?, `Reminder`=? WHERE `ID`=?", req.ToDo.Title, req.ToDo.Description, reminder, req.ToDo.Id)
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to update ToDo->"+err.Error())
 	}
@@ -175,7 +176,7 @@ func (s *toDoServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (
 }
 
 // Delete todo task
-func (s *todoServiceServer) Delete(ctx context.Conext, req *v1.DeleteRequest) (*v1.DeleteResponse, error) {
+func (s *toDoServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (*v1.DeleteResponse, error) {
 	// check if the API version requested by client is supported by server
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err

@@ -43,7 +43,7 @@ func (m *ToDo) Reset()         { *m = ToDo{} }
 func (m *ToDo) String() string { return proto.CompactTextString(m) }
 func (*ToDo) ProtoMessage()    {}
 func (*ToDo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_4caaaaf12d40115d, []int{0}
+	return fileDescriptor_todo_service_108e51c0c58e8064, []int{0}
 }
 func (m *ToDo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ToDo.Unmarshal(m, b)
@@ -106,7 +106,7 @@ func (m *CreateRequest) Reset()         { *m = CreateRequest{} }
 func (m *CreateRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateRequest) ProtoMessage()    {}
 func (*CreateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_4caaaaf12d40115d, []int{1}
+	return fileDescriptor_todo_service_108e51c0c58e8064, []int{1}
 }
 func (m *CreateRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CreateRequest.Unmarshal(m, b)
@@ -155,7 +155,7 @@ func (m *CreateResponse) Reset()         { *m = CreateResponse{} }
 func (m *CreateResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateResponse) ProtoMessage()    {}
 func (*CreateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_4caaaaf12d40115d, []int{2}
+	return fileDescriptor_todo_service_108e51c0c58e8064, []int{2}
 }
 func (m *CreateResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CreateResponse.Unmarshal(m, b)
@@ -204,7 +204,7 @@ func (m *ReadRequest) Reset()         { *m = ReadRequest{} }
 func (m *ReadRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadRequest) ProtoMessage()    {}
 func (*ReadRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_4caaaaf12d40115d, []int{3}
+	return fileDescriptor_todo_service_108e51c0c58e8064, []int{3}
 }
 func (m *ReadRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReadRequest.Unmarshal(m, b)
@@ -238,7 +238,7 @@ func (m *ReadRequest) GetId() int64 {
 	return 0
 }
 
-// Contains todo task data soecifu=ied ub by ID request
+// Contains todo task data specified in by ID request
 type ReadResponse struct {
 	// API versioning: it is my best practice to specify version explicitly
 	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
@@ -253,7 +253,7 @@ func (m *ReadResponse) Reset()         { *m = ReadResponse{} }
 func (m *ReadResponse) String() string { return proto.CompactTextString(m) }
 func (*ReadResponse) ProtoMessage()    {}
 func (*ReadResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_4caaaaf12d40115d, []int{4}
+	return fileDescriptor_todo_service_108e51c0c58e8064, []int{4}
 }
 func (m *ReadResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReadResponse.Unmarshal(m, b)
@@ -302,7 +302,7 @@ func (m *UpdateRequest) Reset()         { *m = UpdateRequest{} }
 func (m *UpdateRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateRequest) ProtoMessage()    {}
 func (*UpdateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_4caaaaf12d40115d, []int{5}
+	return fileDescriptor_todo_service_108e51c0c58e8064, []int{5}
 }
 func (m *UpdateRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UpdateRequest.Unmarshal(m, b)
@@ -352,7 +352,7 @@ func (m *UpdateResponse) Reset()         { *m = UpdateResponse{} }
 func (m *UpdateResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateResponse) ProtoMessage()    {}
 func (*UpdateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_4caaaaf12d40115d, []int{6}
+	return fileDescriptor_todo_service_108e51c0c58e8064, []int{6}
 }
 func (m *UpdateResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UpdateResponse.Unmarshal(m, b)
@@ -401,7 +401,7 @@ func (m *DeleteRequest) Reset()         { *m = DeleteRequest{} }
 func (m *DeleteRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteRequest) ProtoMessage()    {}
 func (*DeleteRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_4caaaaf12d40115d, []int{7}
+	return fileDescriptor_todo_service_108e51c0c58e8064, []int{7}
 }
 func (m *DeleteRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_DeleteRequest.Unmarshal(m, b)
@@ -451,7 +451,7 @@ func (m *DeleteResponse) Reset()         { *m = DeleteResponse{} }
 func (m *DeleteResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteResponse) ProtoMessage()    {}
 func (*DeleteResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_4caaaaf12d40115d, []int{8}
+	return fileDescriptor_todo_service_108e51c0c58e8064, []int{8}
 }
 func (m *DeleteResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_DeleteResponse.Unmarshal(m, b)
@@ -498,7 +498,7 @@ func (m *ReadAllRequest) Reset()         { *m = ReadAllRequest{} }
 func (m *ReadAllRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadAllRequest) ProtoMessage()    {}
 func (*ReadAllRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_4caaaaf12d40115d, []int{9}
+	return fileDescriptor_todo_service_108e51c0c58e8064, []int{9}
 }
 func (m *ReadAllRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReadAllRequest.Unmarshal(m, b)
@@ -540,7 +540,7 @@ func (m *ReadAllResponse) Reset()         { *m = ReadAllResponse{} }
 func (m *ReadAllResponse) String() string { return proto.CompactTextString(m) }
 func (*ReadAllResponse) ProtoMessage()    {}
 func (*ReadAllResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_4caaaaf12d40115d, []int{10}
+	return fileDescriptor_todo_service_108e51c0c58e8064, []int{10}
 }
 func (m *ReadAllResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReadAllResponse.Unmarshal(m, b)
@@ -802,9 +802,9 @@ var _ToDoService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "todo-service.proto",
 }
 
-func init() { proto.RegisterFile("todo-service.proto", fileDescriptor_todo_service_4caaaaf12d40115d) }
+func init() { proto.RegisterFile("todo-service.proto", fileDescriptor_todo_service_108e51c0c58e8064) }
 
-var fileDescriptor_todo_service_4caaaaf12d40115d = []byte{
+var fileDescriptor_todo_service_108e51c0c58e8064 = []byte{
 	// 420 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x53, 0xcd, 0x8e, 0xd3, 0x30,
 	0x10, 0x56, 0x7e, 0x36, 0xbb, 0x3b, 0xa1, 0xd9, 0xc5, 0x70, 0x88, 0x22, 0x04, 0x91, 0x4f, 0xe5,

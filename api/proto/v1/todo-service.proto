@@ -45,7 +45,7 @@ message ReadRequest {
     int64 id = 2;
 }
 
-// Contains todo task data soecifu=ied ub by ID request
+// Contains todo task data specified in by ID request
 message ReadResponse {
     // API versioning: it is my best practice to specify version explicitly
     string api = 1;
