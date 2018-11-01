@@ -10,8 +10,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	// "github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/api/v1"
-	"../../../pkg/api/v1"
+	"github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/api/v1"
 )
 
 const (

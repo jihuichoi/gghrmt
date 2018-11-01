@@ -1,14 +1,14 @@
 package main
 
 import (
-	"/Users/jihuichoi/workspace/gghrmt/pkg/cmd"
+
 	"fmt"
 	"os"
 	// "github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/cmd"
 	// "../../pkg/cmd"
+
+	"github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/cmd"
 )
-
-
 
 func main() {
 	if err := cmd.RunServer(); err != nil {

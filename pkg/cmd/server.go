@@ -1,16 +1,16 @@
 package cmd
 
 import (
-	// mysql driver
-	_ "github.com/go-sql-driver/mysql"
 	"context"
+	"database/sql"
 	"flag"
 	"fmt"
-	"database/sql"
-	// "github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/protocol/grpc"
-	// "github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/service/v1"
-	"../protocol/grpc"
-	"../service/v1"
+
+	// mysql driver
+	_ "github.com/go-sql-driver/mysql"
+
+	"github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/protocol/grpc"
+	"github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/service/v1"
 )
 
 // Config is configuration for Server
