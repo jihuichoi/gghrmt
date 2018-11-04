@@ -54,7 +54,7 @@
     },
     "/v1/todo/all": {
       "get": {
-        "summary": "Read All todo tasks",
+        "summary": "Read all todo tasks",
         "operationId": "ReadAll",
         "responses": {
           "200": {
@@ -271,7 +271,7 @@
           "title": "ID of created task"
         }
       },
-      "title": "Response that contains data for created todo task"
+      "title": "Contains data of created todo task"
     },
     "v1DeleteResponse": {
       "type": "object",
@@ -283,7 +283,7 @@
         "deleted": {
           "type": "string",
           "format": "int64",
-          "title": "Contains number of entities have been deleted\nEquals 1 in case of successfully delete"
+          "title": "Contains number of entities have beed deleted\nEquals 1 in case of succesfull delete"
         }
       },
       "title": "Contains status of delete operation"
@@ -352,7 +352,7 @@
         },
         "toDo": {
           "$ref": "#/definitions/v1ToDo",
-          "title": "Todo entity to update"
+          "title": "Task entity to update"
         }
       },
       "title": "Request data to update todo task"
@@ -367,7 +367,7 @@
         "updated": {
           "type": "string",
           "format": "int64",
-          "title": "Contains number of entities have been updated\nEquals 1 in case of successfully update"
+          "title": "Contains number of entities have beed updated\nEquals 1 in case of succesfull update"
         }
       },
       "title": "Contains status of update operation"

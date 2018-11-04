@@ -10,6 +10,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
+
 	"github.com/amsokol/go-grpc-http-rest-microservice-tutorial/pkg/api/v1"
 )
 
@@ -34,7 +35,7 @@ func RunServer(ctx context.Context, grpcPort, httpPort string) error {
 	signal.Notify(c, os.Interrupt)
 	go func() {
 		for range c {
-			// signal is ^c, handle it
+			// sig is a ^C, handle it
 		}
 
 		_, cancel := context.WithTimeout(ctx, 5*time.Second)

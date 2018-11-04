@@ -33,17 +33,18 @@ func (s *toDoServiceServer) checkAPI(api string) error {
 	// API version is "" means use current version of the service
 	if len(api) > 0 {
 		if apiVersion != api {
-			return status.Errorf(codes.Unimplemented, "unsupported API version: service implements aPI version")
+			return status.Errorf(codes.Unimplemented,
+				"unsupported API version: service implements API version '%s', but asked for '%s'", apiVersion, api)
 		}
 	}
 	return nil
 }
 
-// connect returns SQL database connect from the pool
+// connect returns SQL database connection from the pool
 func (s *toDoServiceServer) connect(ctx context.Context) (*sql.Conn, error) {
 	c, err := s.db.Conn(ctx)
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to connect to database -> "+err.Error())
+		return nil, status.Error(codes.Unknown, "failed to connect to database-> "+err.Error())
 	}
 	return c, nil
 }
@@ -64,25 +65,25 @@ func (s *toDoServiceServer) Create(ctx context.Context, req *v1.CreateRequest) (
 
 	reminder, err := ptypes.Timestamp(req.ToDo.Reminder)
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "reminder field has invalid format -> "+err.Error())
+		return nil, status.Error(codes.InvalidArgument, "reminder field has invalid format-> "+err.Error())
 	}
 
 	// insert ToDo entity data
-	res, err := c.ExecContext(ctx, "INSERT INTO ToDo(`Title`, `Description`, `Reminder`) VALUES (?, ?, ?)",
+	res, err := c.ExecContext(ctx, "INSERT INTO ToDo(`Title`, `Description`, `Reminder`) VALUES(?, ?, ?)",
 		req.ToDo.Title, req.ToDo.Description, reminder)
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to insert into Todo->"+ err.Error())
+		return nil, status.Error(codes.Unknown, "failed to insert into ToDo-> "+err.Error())
 	}
 
-	// get ID of created ToDo
+	// get ID of creates ToDo
 	id, err := res.LastInsertId()
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to retrieve id for created Todo->" + err.Error())
+		return nil, status.Error(codes.Unknown, "failed to retrieve id for created ToDo-> "+err.Error())
 	}
 
 	return &v1.CreateResponse{
 		Api: apiVersion,
-		Id: id,
+		Id:  id,
 	}, nil
 }
 
@@ -101,38 +102,42 @@ func (s *toDoServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.
 	defer c.Close()
 
 	// query ToDo by ID
-	rows, err := c.QueryContext(ctx, "SELECT `ID`, `Title`, `Description`, `Reminder` FROM ToDo WHERE `ID` = ?", req.Id)
+	rows, err := c.QueryContext(ctx, "SELECT `ID`, `Title`, `Description`, `Reminder` FROM ToDo WHERE `ID`=?",
+		req.Id)
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to select from ToDo->" + err.Error())
+		return nil, status.Error(codes.Unknown, "failed to select from ToDo-> "+err.Error())
 	}
 	defer rows.Close()
 
 	if !rows.Next() {
 		if err := rows.Err(); err != nil {
-			return nil, status.Error(codes.Unknown, "failed to retrieve data from ToDo->"+err.Error())
+			return nil, status.Error(codes.Unknown, "failed to retrieve data from ToDo-> "+err.Error())
 		}
-		return nil, status.Error(codes.NotFound, fmt.Sprintf("ToDo with ID='%d' is not found", req.Id))
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("ToDo with ID='%d' is not found",
+			req.Id))
 	}
 
-	// get Todo data
+	// get ToDo data
 	var td v1.ToDo
 	var reminder time.Time
 	if err := rows.Scan(&td.Id, &td.Title, &td.Description, &reminder); err != nil {
-		return nil, status.Error(codes.Unknown, "failed to retrieve field values from ToDo row->"+err.Error())
+		return nil, status.Error(codes.Unknown, "failed to retrieve field values from ToDo row-> "+err.Error())
 	}
 	td.Reminder, err = ptypes.TimestampProto(reminder)
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "reminder field has invalid format->"+err.Error())
+		return nil, status.Error(codes.Unknown, "reminder field has invalid format-> "+err.Error())
 	}
 
 	if rows.Next() {
-		return nil, status.Error(codes.Unknown, fmt.Sprintf("found multiple ToDo rows with ID='%d", req.Id))
+		return nil, status.Error(codes.Unknown, fmt.Sprintf("found multiple ToDo rows with ID='%d'",
+			req.Id))
 	}
 
 	return &v1.ReadResponse{
-		Api: apiVersion,
+		Api:  apiVersion,
 		ToDo: &td,
 	}, nil
+
 }
 
 // Update todo task
@@ -142,7 +147,7 @@ func (s *toDoServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (
 		return nil, err
 	}
 
-	// get SQL connect from pool
+	// get SQL connection from pool
 	c, err := s.connect(ctx)
 	if err != nil {
 		return nil, err
@@ -151,25 +156,28 @@ func (s *toDoServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (
 
 	reminder, err := ptypes.Timestamp(req.ToDo.Reminder)
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "reminder field had invalid format->"+err.Error())
+		return nil, status.Error(codes.InvalidArgument, "reminder field has invalid format-> "+err.Error())
 	}
 
 	// update ToDo
-	res, err := c.ExecContext(ctx, "UPDATE ToDo SET `Title`=?, `Description`=?, `Reminder`=? WHERE `ID`=?", req.ToDo.Title, req.ToDo.Description, reminder, req.ToDo.Id)
+	res, err := c.ExecContext(ctx, "UPDATE ToDo SET `Title`=?, `Description`=?, `Reminder`=? WHERE `ID`=?",
+		req.ToDo.Title, req.ToDo.Description, reminder, req.ToDo.Id)
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to update ToDo->"+err.Error())
+		return nil, status.Error(codes.Unknown, "failed to update ToDo-> "+err.Error())
 	}
 
 	rows, err := res.RowsAffected()
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to retrieve rows affected value->"+err.Error())
+		return nil, status.Error(codes.Unknown, "failed to retrieve rows affected value-> "+err.Error())
 	}
+
 	if rows == 0 {
-		return nil, status.Error(codes.NotFound, fmt.Sprintf("ToDo with ID='%d' is not found", req.ToDo.Id))
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("ToDo with ID='%d' is not found",
+			req.ToDo.Id))
 	}
 
 	return &v1.UpdateResponse{
-		Api: apiVersion,
+		Api:     apiVersion,
 		Updated: rows,
 	}, nil
 }
@@ -181,7 +189,7 @@ func (s *toDoServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (
 		return nil, err
 	}
 
-	// get SQL connect from pool
+	// get SQL connection from pool
 	c, err := s.connect(ctx)
 	if err != nil {
 		return nil, err
@@ -191,20 +199,21 @@ func (s *toDoServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (
 	// delete ToDo
 	res, err := c.ExecContext(ctx, "DELETE FROM ToDo WHERE `ID`=?", req.Id)
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to delete ToDo->"+err.Error())
+		return nil, status.Error(codes.Unknown, "failed to delete ToDo-> "+err.Error())
 	}
 
 	rows, err := res.RowsAffected()
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to retrieve rows affected vale->"+err.Error())
+		return nil, status.Error(codes.Unknown, "failed to retrieve rows affected value-> "+err.Error())
 	}
 
 	if rows == 0 {
-		return nil, status.Error(codes.NotFound, fmt.Sprintf("Todo with ID='%d' is not found", req.Id))
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("ToDo with ID='%d' is not found",
+			req.Id))
 	}
 
 	return &v1.DeleteResponse{
-		Api: apiVersion,
+		Api:     apiVersion,
 		Deleted: rows,
 	}, nil
 }
@@ -226,7 +235,7 @@ func (s *toDoServiceServer) ReadAll(ctx context.Context, req *v1.ReadAllRequest)
 	// get ToDo list
 	rows, err := c.QueryContext(ctx, "SELECT `ID`, `Title`, `Description`, `Reminder` FROM ToDo")
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to select from ToDo->"+err.Error())
+		return nil, status.Error(codes.Unknown, "failed to select from ToDo-> "+err.Error())
 	}
 	defer rows.Close()
 
@@ -235,21 +244,21 @@ func (s *toDoServiceServer) ReadAll(ctx context.Context, req *v1.ReadAllRequest)
 	for rows.Next() {
 		td := new(v1.ToDo)
 		if err := rows.Scan(&td.Id, &td.Title, &td.Description, &reminder); err != nil {
-			return nil, status.Error(codes.Unknown, "failed to retrieve field values from ToDo row->"+err.Error())
+			return nil, status.Error(codes.Unknown, "failed to retrieve field values from ToDo row-> "+err.Error())
 		}
 		td.Reminder, err = ptypes.TimestampProto(reminder)
 		if err != nil {
-			return nil, status.Error(codes.Unknown, "reminder field has invalid format->"+err.Error())
+			return nil, status.Error(codes.Unknown, "reminder field has invalid format-> "+err.Error())
 		}
 		list = append(list, td)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, status.Error(codes.Unknown, "failed to retrieve data from ToDo->"+err.Error())
+		return nil, status.Error(codes.Unknown, "failed to retrieve data from ToDo-> "+err.Error())
 	}
 
 	return &v1.ReadAllResponse{
-		Api: apiVersion,
+		Api:   apiVersion,
 		ToDos: list,
 	}, nil
 }

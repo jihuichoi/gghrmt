@@ -30,7 +30,9 @@ func RunServer(ctx context.Context, v1API v1.ToDoServiceServer, port string) err
 		for range c {
 			// sig is a ^C, handle it
 			log.Println("shutting down gRPC server...")
+
 			server.GracefulStop()
+
 			<-ctx.Done()
 		}
 	}()
