@@ -1,18 +1,18 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
-	"time"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
-	"fmt"
-	"log"
-	"io/ioutil"
-	"encoding/json"
+	"time"
 )
 
 func main() {
-	//get configuration
+	// get configuration
 	address := flag.String("server", "http://localhost:8080", "HTTP gateway url, e.g. http://localhost:8080")
 	flag.Parse()
 
@@ -22,44 +22,48 @@ func main() {
 	var body string
 
 	// Call Create
-	resp, err := http.Post(*address+"/v1/todo", "applicatin/json", strings.NewReader(fmt.Sprintf(`
-	{
-		"api": "v1",
-		"toDo": {
-			"title": "title (%s)",
-			"description": "description (%s)",
-			"reminder": "%s"
+	resp, err := http.Post(*address+"/v1/todo", "application/json", strings.NewReader(fmt.Sprintf(`
+		{
+			"api":"v1",
+			"toDo": {
+				"title":"title (%s)",
+				"description":"description (%s)",
+				"reminder":"%s"
+			}
 		}
-	}
-`, pfx, pfx, pfx)))
+	`, pfx, pfx, pfx)))
 	if err != nil {
 		log.Fatalf("failed to call Create method: %v", err)
 	}
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		body = fmt.Sprintf("failed to read Create response body: %v", err)
+		body = fmt.Sprintf("failed read Create response body: %v", err)
 	} else {
 		body = string(bodyBytes)
 	}
-	log.Printf("Create response: code=%d, Body=%s\n\n", resp.StatusCode, body)
+	log.Printf("Create response: Code=%d, Body=%s\n\n", resp.StatusCode, body)
 
 	// parse ID of created ToDo
 	var created struct {
 		API string `json:"api"`
-		ID string `json:"id"`
+		ID  string `json:"id"`
 	}
 	err = json.Unmarshal(bodyBytes, &created)
 	if err != nil {
-		log.Fatalf("failed to unamrshal JSON response of Create method: %v", err)
-		fmt.Println("error", err)
+		log.Fatalf("failed to unmarshal JSON response of Create method: %v", err)
+		fmt.Println("error:", err)
 	}
 
 	// Call Read
 	resp, err = http.Get(fmt.Sprintf("%s%s/%s", *address, "/v1/todo", created.ID))
-	bodyBytes, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		body = fmt.Sprintf("failed to Read response body: %v", err)
+		log.Fatalf("failed to call Read method: %v", err)
+	}
+	bodyBytes, err = ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		body = fmt.Sprintf("failed read Read response body: %v", err)
 	} else {
 		body = string(bodyBytes)
 	}
@@ -71,24 +75,25 @@ func main() {
 		{
 			"api":"v1",
 			"toDo": {
-					"title":"title (%s) + updated",
-					"description": "description (%s) + updated",
-					"reminder": "%s"
+				"title":"title (%s) + updated",
+				"description":"description (%s) + updated",
+				"reminder":"%s"
 			}
 		}
-		`, pfx, pfx, pfx)))
+	`, pfx, pfx, pfx)))
 	req.Header.Set("Content-Type", "application/json")
 	resp, err = http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatalf("failed to call Updated method: %v", err)
+		log.Fatalf("failed to call Update method: %v", err)
 	}
 	bodyBytes, err = ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		body = fmt.Sprintf("failed to read Update response body: %v", err)
+		body = fmt.Sprintf("failed read Update response body: %v", err)
 	} else {
 		body = string(bodyBytes)
 	}
+	log.Printf("Update response: Code=%d, Body=%s\n\n", resp.StatusCode, body)
 
 	// Call ReadAll
 	resp, err = http.Get(*address + "/v1/todo/all")
@@ -98,7 +103,7 @@ func main() {
 	bodyBytes, err = ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		body = fmt.Sprintf("failed to read ReadAll response body: %v", err)
+		body = fmt.Sprintf("failed read ReadAll response body: %v", err)
 	} else {
 		body = string(bodyBytes)
 	}
@@ -113,7 +118,7 @@ func main() {
 	bodyBytes, err = ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		body = fmt.Sprintf("failed to read Delete response body: %v", err)
+		body = fmt.Sprintf("failed read Delete response body: %v", err)
 	} else {
 		body = string(bodyBytes)
 	}
